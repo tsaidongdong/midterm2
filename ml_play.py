@@ -83,7 +83,33 @@ def ml_loop(side: str):
 
             #檢查敲到BLOCK
             #敲到上面預測位置
-
+            if len(blocker_position_history)<2:
+                dblocker=0
+            else:
+                dblocker = blocker_direction(blocker_position_history[-1],blocker_position_history[-2])
+            t=(scene_info["blocker"][1]-scene_info["ball"][1]-5)// scene_info["ball_speed"][1]#幾個frame會接合
+            front_predict=scene_info["ball"][0]+(scene_info["ball_speed"][0]*t)#the place that maybe hit the block
+            blocker_position_predict=blocker_predict(t,blocker_position_history[-1],dblocker)
+            #敲到左邊預測位置(算可能值)
+            t1=(240-scene_info["ball"][1]-5)// scene_info["ball_speed"][1]
+            left_predict1=scene_info["ball"][0]+(scene_info["ball_speed"][0]*t1)#the place that maybe hit the block
+            blocker_position_predict1=blocker_predict(t1,blocker_position_history[-1],dblocker)
+            t2=(260-scene_info["ball"][1])// scene_info["ball_speed"][1]
+            left_predict2=scene_info["ball"][0]+(scene_info["ball_speed"][0]*t2)#the place that maybe hit the block
+            blocker_position_predict2=blocker_predict(t1,blocker_position_history[-1],dblocker)
+            bottom_frame=(420-scene_info["ball"][1]-5)// scene_info["ball_speed"][1]
+            bottom_left_predict=(blocker_position_predict1+blocker_position_predict2)/2-scene_info["ball_speed"][0]*(bottom_frame-(t1+t2)/2)
+            bound = bottom_left_predict // 200 # Determine if it is beyond the boundary
+            if (bound > 0): # pred > 200 # fix landing position
+                if (bound%2 == 0) : 
+                    bottom_left_predict = bottom_left_predict - bound*200                    
+                else :
+                    bottom_left_predict = 200 - (bottom_left_predict - 200*bound)
+            elif (bound < 0) : # pred < 0
+                if (bound%2 ==1) :
+                    bottom_left_predict = abs(bottom_left_predict - (bound+1) *200)
+                else :
+                    bottom_left_predict = bottom_left_predict + (abs(bound)*200)
             #敲到左邊預測位置(算可能值)
             
             #敲到右邊預測位置
@@ -103,7 +129,9 @@ def ml_loop(side: str):
                 else :
                     pred = pred + (abs(bound)*200)
             #敲到上面
-
+            if front_predict+5>=blocker_position_predict and front_predict<=blocker_position_predict+30:
+                return move_to(player = '1P',pred = 100)
+            else:
                 return move_to(player = '1P',pred = pred)
 
         elif scene_info["ball"][1]>260 and scene_info["ball"][1]<420:#球向上 但在下板子跟BLOCK中間
