@@ -130,7 +130,7 @@ def ml_loop(side: str):
                     pred = pred + (abs(bound)*200)
             #敲到上面
             if front_predict+5>=blocker_position_predict and front_predict<=blocker_position_predict+30:
-                return move_to(player = '1P',pred = 80)
+                return move_to(player = '1P',pred = 90)
             else:
                 return move_to(player = '1P',pred = pred)
 
@@ -157,9 +157,9 @@ def ml_loop(side: str):
                         pred = pred + (abs(bound)*200)
                 return move_to(player = '1P',pred = pred)
             else:
-                return move_to(player = '1P',pred = 80)
+                return move_to(player = '1P',pred = 90)
         else: # 球正在向上 # ball goes up #但不會敲到板子
-            return move_to(player = '1P',pred = 80)
+            return move_to(player = '1P',pred = 90)
 
 
 
