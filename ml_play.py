@@ -109,9 +109,20 @@ def ml_loop(side: str):
             t=(scene_info["blocker"][1]+20-scene_info["ball"][1])// -(scene_info["ball_speed"][1])#幾個frame會接合
             down_predict=scene_info["ball"][0]+(scene_info["ball_speed"][0]*t)#the place that maybe hit the block
             blocker_position_predict=blocker_predict(t,blocker_position_history[-1],dblocker)
+            bound = down_predict // 200 # Determine if it is beyond the boundary
+            if (bound > 0): # pred > 200 # fix landing position
+                if (bound%2 == 0) : 
+                    down_predict = down_predict - bound*200                    
+                else :
+                    down_predict = 200 - (down_predict - 200*bound)
+            elif (bound < 0) : # pred < 0
+                if (bound%2 ==1) :
+                    down_predict = abs(down_predict - (bound+1) *200)
+                else :
+                    down_predict = down_predict + (abs(bound)*200)
             if down_predict+5>=blocker_position_predict and down_predict<=blocker_position_predict+30:
                 pred=2*down_predict-scene_info["ball"][0]
-                return move_to(player = '1P',pred = pred)
+                return move_to(player = '1P',pred = down_predict)
             else:
                 return move_to(player = '1P',pred = 100)
         else: # 球正在向上 # ball goes up #但不會敲到板子
