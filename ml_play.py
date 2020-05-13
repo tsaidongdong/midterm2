@@ -156,7 +156,7 @@ def ml_loop(side: str):
             blocker_position_predict=blocker_predict(t,blocker_position_history[-1],dblocker)
             if down_predict+5>=blocker_position_predict and down_predict<=blocker_position_predict+30:
                 pred=2*down_predict-scene_info["ball"][0]
-                            bound = pred //200 # Determine if it is beyond the boundary
+                bound = pred //200 # Determine if it is beyond the boundary
                 if (bound > 0): # pred > 200 # fix landing position
                     if (bound%2 == 0) : 
                         pred = pred - bound*200                    
